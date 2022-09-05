@@ -1,0 +1,36 @@
+---
+services:
+  shorter-app:
+    image: springboot-app
+    build: .
+    ports:
+      - "8080:8080"
+    networks:
+      - spring-cloud-network
+    environment:
+      - db.host=mysqldb
+      - db.port=3306
+      - db.name=short_db
+      - db.username=root
+      - db.password=root
+      - spring.datasource.url=jdbc:mysql://mysqldb:3306/short_db?createDatabaseIfNotExist=true
+      - spring.datasource.username=root
+      - spring.datasource.password=root
+    depends_on:
+      - mysqldb
+    volumes:
+      - resources:/src/main/resources
+
+  mysqldb:
+    image: mariadb
+    environment:
+      MARIADB_DATABASE: short_db
+      MARIADB_ROOT_PASSWORD: root
+    networks:
+      - spring-cloud-network
+
+networks:
+  spring-cloud-network:
+
+volumes:
+  resources:

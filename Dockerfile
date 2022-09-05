@@ -1,4 +1,6 @@
 FROM amazoncorretto:11-alpine-jdk
+VOLUME /resources
 MAINTAINER goodgamegroup.it
-COPY target/short-0.0.1-SNAPSHOT.jar short-0.0.1-SNAPSHOT.jar
-ENTRYPOINT ["java","-jar","/short-0.0.1-SNAPSHOT.jar"]
+EXPOSE 8080
+COPY target/spring-boot-link-shorter.jar spring-boot-link-shorter.jar
+ENTRYPOINT ["java","-jar","/spring-boot-link-shorter.jar"]

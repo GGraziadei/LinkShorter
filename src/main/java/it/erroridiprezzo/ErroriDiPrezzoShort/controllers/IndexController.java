@@ -74,6 +74,23 @@ public class IndexController {
         response.getWriter().flush();
     }
 
+    @ResponseBody
+    @GetMapping
+    public void getIndex( HttpServletRequest request , HttpServletResponse response) throws Exception {
+        Page page = this.pageRepository.findByEnable(true);
+        String content = Files.readString(Path.of(page.getBodyPath()));
+        Context context = new Context();
+        context.setLocale(Locale.ITALY);
+        context.setVariable("title" , page.getTitle() );
+        context.setVariable("body" , content );
+        context.setVariable("url" , "#hosted-by-goodgamegroup.it");
+        context.setVariable("delayTime" , this.delayTime );
+        String html = templateEngine.process("index", context);
+        response.setContentType("text/html");
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().write(html);
+        response.getWriter().flush();
+    }
 
 
 }

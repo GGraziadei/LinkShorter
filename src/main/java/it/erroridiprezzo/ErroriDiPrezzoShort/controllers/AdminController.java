@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -97,9 +98,9 @@ public class AdminController {
 
     @RequestMapping(value = "/page/savePage", method=RequestMethod.POST)
     public RedirectView savePage(@ModelAttribute AddPageForm addPageForm) throws IOException {
-        String fileName = addPageForm.getFile().getOriginalFilename();
         File file = new File("src/main/resources/pages/" + UUID.randomUUID());
-        addPageForm.getFile().transferTo(file.toPath());
+        String path = file.getAbsolutePath();
+        addPageForm.getFile().transferTo(Paths.get(path) );
         Page page = Page.builder()
                 .title(addPageForm.getTitle())
                 .enable(false)
@@ -155,6 +156,19 @@ public class AdminController {
     @GetMapping("/report/all/{days}")
     public ResponseEntity<Resource> reportAll(@PathVariable(name = "days") int days ) throws IOException {
         File file = new File(this.reportService.generateReport(days));
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+
+        return ResponseEntity.ok()
+                .contentLength(file.length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
+
+
+    @GetMapping("/report/{urlId}/{days}")
+    public ResponseEntity<Resource> reportUrl(@PathVariable(name = "days") int days , @PathVariable(name = "urlId") String urlId ) throws IOException {
+        Url url = this.urlRepository.findById(urlId).orElseThrow();
+        File file = new File(this.reportService.generateReport(days , url.getUrl() ));
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
 
         return ResponseEntity.ok()

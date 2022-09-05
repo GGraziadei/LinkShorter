@@ -15,22 +15,17 @@ public class StatService {
     @Autowired
     private UrlStatRepository urlStatRepository;
 
-    public void test(){
-
-    }
     public Map<LocalDate, Integer > clickPerDate() {
-        Map<LocalDate , List<UrlStat>>  localDateListMap = new TreeMap<>();
+        Map<LocalDate , Integer >  localDateListMap = new TreeMap<>();
         for(UrlStat urlStat : this.urlStatRepository.findAll() ){
             LocalDate localDate = LocalDate.from(urlStat.getTs());
             if( ! localDateListMap.containsKey(localDate)){
-                localDateListMap.put(localDate, new LinkedList<>());
+                localDateListMap.put(localDate, 0 );
             }
-            localDateListMap.get(localDate).add(urlStat);
+            localDateListMap.put(localDate , localDateListMap.get(localDate)  + 1 ) ;
         }
 
-        return  localDateListMap.entrySet()
-                .stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e ->  e.getValue().size()));
+        return  localDateListMap;
     }
 
     public Map<LocalDate, Integer > clickPerDatePerUrl(String url ){
